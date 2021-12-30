@@ -6,44 +6,14 @@ WHOLE_LINE = 1
 OTHERS = 2
 
 
-class Body:
-
-    def __init__(self):
-        self.content = ""
-        self.is_form = False
-
-    def set_content(self, content):
-        self.content = content
-
-    def set_is_form(self, is_form):
-        self.is_form = is_form
-
-
-class OriginData:
-
-    def __init__(self):
-        self.file_name = ""
-        self.body_map = {}
-
-    def set_file_name(self, file_name):
-        self.file_name = file_name
-
-    def add_body(self, index, body):
-        self.body_map[index] = body
-
-    def get_filename(self):
-        return self.file_name
-
-    def get_bodymap(self):
-        return self.body_map
-
-    pass
-
-
 class Contract:
 
     def __init__(self):
-        self.type = None
+        self.root_dir = None
+        self.filename = None
+        self._type = None
+        self.text = None
+
         self.no = None
         self.title = None
         self.customer_name = None
@@ -59,8 +29,14 @@ class Contract:
         self.incentive_system = None
         self.unit_price = None
 
-    def set_type(self, type):
-        self.type = type
+    def set_root_dir(self, root_dir):
+        self.root_dir = root_dir
+
+    def set_filename(self, filename):
+        self.filename = filename
+
+    def set_type(self, _type):
+        self._type = _type
 
     def set_title(self, title):
         self.title = title
@@ -113,6 +89,9 @@ class Contract:
         pairs.pop("type")
         return list(pairs.keys()), list(pairs.values())
     pass
+
+    def set_text(self, src_text):
+        self.text = src_text
 
 
 if __name__ == '__main__':

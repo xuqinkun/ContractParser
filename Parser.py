@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import os
+import re
 import os.path as path
 
 import pandas as pd
@@ -37,20 +38,14 @@ def _contains_any(seq, aset):
     return True if any(seq.find(word) >= 0 for word in aset) else False
 
 
-def _extract_form(doc):
-    return doc["form_blocks"]
-
-
-def _extract_text(doc):
-    if "lines" in doc.keys():
-        return doc["lines"]
-    else:
-        return ""
-
-
-def read_content_per_contract(pages={}):
+def extract_contract(pages={}):
+    """
+    遍历合同每一页的内容，提取合同关键信息
+    :param pages: 每一个合同包含的所有页面
+    :return: 合同
+    """
     page_num = len(pages.keys())
-    orig_data = OriginData()
+    contract_json = {}
     with open(pages[1]) as file:
         doc = json.load(file)
         table_list = doc["pages"][0]["table"]
@@ -58,23 +53,29 @@ def read_content_per_contract(pages={}):
         if not _contains_any(title, title_key_set):
             return None
     index = 0
+    src_text = ""
     for i in range(1, page_num + 1, 1):
-        # path = pages[i]
         with open(pages[i], "r") as file:
-            content = json.load(file)
-            table_list = content['pages'][0]['table']
+            data = json.load(file)
+            table_list = data['pages'][0]['table']
             for table in table_list:
-                body = Body()
                 is_form = table["type"]
-                body.is_form = is_form
                 if is_form:
-                    content = _extract_form(table)
+                    _parse_form(table["form_blocks"], contract_json)
                 else:
-                    content = _extract_text(table)
-                body.set_content(content)
-                orig_data.add_body(index, body)
+                    _parse_text(table["lines"], contract_json)
+                    src_text += table.data
                 index += 1
-    return orig_data
+    _contract = assemble_contract(contract_json)
+    _contract.set_title(title)
+    _contract.set_text(src_text)
+    if _contract.incentive_system is not None:
+        _contract.type = SINGLE_PRODUCT
+    elif _contract.unit_price is not None:
+        _contract.type = WHOLE_LINE
+    else:
+        _contract.type = OTHERS
+    return _contract
 
 
 def _parse_form(form, dataframe):
@@ -131,35 +132,6 @@ def assemble_contract(dataframe):
     return contract
 
 
-def extract_contract(ori_data_list):
-    contract_list = []
-    for data in ori_data_list:
-        bodies = data.get_bodymap()
-        title = data.get_filename()
-        n = len(bodies)
-        i = 0
-        contract_json = {}
-        while i < n:
-            body = bodies[i]
-            if body.is_form:
-                step = _parse_form(body.content, contract_json)
-                i += step
-            else:
-                _parse_text(body.content, contract_json)
-                i += 1
-        print(title)
-        contract = assemble_contract(contract_json)
-        contract.title = title
-        if contract.incentive_system is not None:
-            contract.type = SINGLE_PRODUCT
-        elif contract.unit_price is not None:
-            contract.type = WHOLE_LINE
-        else:
-            contract.type = OTHERS
-        contract_list.append(contract)
-    return contract_list
-
-
 def write_excel(out_path, contract_list):
     item = contract_list[0]
     keys, _ = item.serialize()
@@ -176,17 +148,17 @@ def write_excel(out_path, contract_list):
 if __name__ == '__main__':
     json_files = file_filter(root)
     err_file = []
-    orig_data_list = []
+    contract_list = []
     for name, pages in json_files.items():
         try:
-            orig_data = read_content_per_contract(pages)
-            orig_data.file_name = name
-            if orig_data is not None:
-                orig_data_list.append(orig_data)
+            contract = extract_contract(pages)
+            contract.file_name = name
+            if contract is not None:
+                contract_list.append(contract)
         except Exception as e:
             err_file.append(name)
     # print(err_file)
-    contract_list = extract_contract(orig_data_list)
+    # contract_list = extract_contract(contract_list)
     single_contract_list = [e for e in contract_list if e.type == SINGLE_PRODUCT]
     whole_line_contract_list = [e for e in contract_list if e.type == WHOLE_LINE]
     other_contract_list = [e for e in contract_list if e.type == OTHERS]
