@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 
 SINGLE_PRODUCT = 0
 WHOLE_LINE = 1
@@ -10,24 +9,33 @@ class Contract:
 
     def __init__(self):
         self.root_dir = None
-        self.filename = None
+        self.filename = ""
         self._type = None
         self.text = None
 
-        self.no = None
-        self.title = None
-        self.customer_name = None
-        self.sign_entity = None
-        self.product_name = None
-        self.total_value = None
-        self.sign_place = None
-        self.sign_date = None
-        self.delivery_method = None
-        self.delivery_date = None
-        self.payment_method = None
-        self.expiry_date = None
+        self.no = ""
+        self._title = ""
+        self.customer_name = ""
+        self.sign_entity = ""
+        self.product_name = ""
+        self.total_value = ""
+        self.sign_place = ""
+        self.sign_date = ""
+        self.delivery_method = ""
+        self.delivery_date = ""
+        self.payment_method = ""
+        self.expiry_date = ""
         self.incentive_system = None
-        self.unit_price = None
+        self.unit_price = ""
+        self._form = None
+
+    @property
+    def form(self):
+        return self._form
+
+    @form.setter
+    def form(self, form):
+        self._form = form
 
     def set_root_dir(self, root_dir):
         self.root_dir = root_dir
@@ -35,11 +43,21 @@ class Contract:
     def set_filename(self, filename):
         self.filename = filename
 
-    def set_type(self, _type):
+    @property
+    def type(self):
+        return self._type
+
+    @type.setter
+    def type(self, _type):
         self._type = _type
 
-    def set_title(self, title):
-        self.title = title
+    @property
+    def title(self):
+        return self._title
+
+    @title.setter
+    def title(self, _title):
+        self._title = _title
 
     def set_no(self, no):
         self.no = no
@@ -86,7 +104,9 @@ class Contract:
         for key in list(key_set):
             if pairs[key] is None:
                 pairs.pop(key)
-        pairs.pop("type")
+        pairs.pop("_type")
+        pairs.pop("text")
+        pairs.pop("_form")
         return list(pairs.keys()), list(pairs.values())
     pass
 
@@ -94,5 +114,17 @@ class Contract:
         self.text = src_text
 
 
-if __name__ == '__main__':
-    print(Contract().serialize())
+class Cell:
+
+    def __init__(self, data=None):
+        self.start_row = None
+        self.end_row = None
+        self.start_column = None
+        self.end_column = None
+        self.data = None
+        self.position = None
+        self.org_position = None
+        self.char_position = None
+        self.lines = None
+        if data:
+            self.__dict__ = data
