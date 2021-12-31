@@ -1,6 +1,6 @@
 # 合同解析
 ## Usage
-python main.py input_dir output_dir
+python main.py input_dir output_dir \
 ps:
     input_dir: json文件根目录
     output_dir：输出Excel保存目录
