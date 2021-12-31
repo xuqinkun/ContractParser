@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from Keys import *
+
 SINGLE_PRODUCT = 0
 WHOLE_LINE = 1
 OTHERS = 2
@@ -107,7 +109,14 @@ class Contract:
         pairs.pop("_type")
         pairs.pop("text")
         pairs.pop("_form")
+        key_set = list(pairs.keys())
+        key_set[key_set.index("no")] = CONTRACT_NO_KEY
+        key_set[key_set.index("sign_date")] = SIGN_DATE_KEY
+        key_set[key_set.index("customer_name")] = CUSTOMER_NAME_KEY
+        key_set[key_set.index("sign_place")] = SIGN_PLACE_KEY
+        key_set[key_set.index("product_name")] = PRODUCT_NAME_KEY
         return list(pairs.keys()), list(pairs.values())
+
     pass
 
     def set_text(self, src_text):

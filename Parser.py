@@ -2,6 +2,7 @@
 import json
 import os
 import os.path as path
+import re
 
 import pandas as pd
 
@@ -18,17 +19,17 @@ def file_filter(root_dir="."):
     for root_path, dirs, files in os.walk(root_dir):
         for file in files:
             if file.endswith(".json"):
-                if "page" in file:
-                    tokens = file.split("_")
-                    name = tokens[0]
-                    index = int(tokens[-1].split(".")[0])
-                else:
-                    name = file.split(".")[0]
-                    index = 1
-                key = path.join(root_path, name)
+                # if "page" in file:
+                #     tokens = file.split("_")
+                #     name = tokens[0]
+                #     index = int(tokens[-1].split(".")[0])
+                # else:
+                #     name = file.split(".")[0]
+                #     index = 1
+                key = path.join(root_path, file)
                 if key not in ret_map:
                     ret_map[key] = {}
-                ret_map[key][index] = path.join(root_path, file)
+                ret_map[key] = path.join(root_path, file)
     return ret_map
 
 
@@ -39,7 +40,7 @@ def _contains_any(seq, aset):
     return True if any(seq.find(word) >= 0 for word in aset) else False
 
 
-def extract_contract(pages={}):
+def extract_contract(pages={}, filename=""):
     """
     遍历合同每一页的内容，提取合同关键信息
     :param pages: 每一个合同包含的所有页面
@@ -67,10 +68,9 @@ def extract_contract(pages={}):
                     _parse_text(table["lines"], contract_json)
                     src_text += table["data"]
     form, extra_data = _parse_form(form_data)
-    _contract = assemble_contract(contract_json)
+    _contract = assemble_contract(contract_json, extra_data, src_text)
     _contract.form = form
     _contract.title = title
-    _contract.set_text(src_text)
     if len(_contract.incentive_system) > 0:
         _contract.type = SINGLE_PRODUCT
     elif len(_contract.unit_price) > 0:
@@ -156,7 +156,7 @@ def _parse_text(content, dataframe):
             tokens = text.split(COLON)
             if len(tokens) == 2:
                 key, value = tokens
-                if len(value.strip()) != 0 and key not in dataframe.keys():
+                if len(key.strip()) > 0 and len(value.strip()) != 0 and key not in dataframe.keys():
                     dataframe[key] = value
     pass
 
@@ -167,21 +167,41 @@ def parse_field(dataframe, field_key_list):
         for target in key_set:
             if key in target or target in key:
                 return dataframe[target]
-    return ""
+    return None
 
 
-def assemble_contract(dataframe):
+def assemble_contract(dataframe, extra_data, src_text):
     _contract = Contract()
-    _contract.set_no(parse_field(dataframe, key_dictionary[CONTRACT_NO_KEY]))
-    _contract.set_customer_name(parse_field(dataframe, key_dictionary[CUSTOMER_NAME_KEY]))
-    _contract.set_sign_entity(parse_field(dataframe, key_dictionary[SIGN_ENTITY_KEY]))
-    _contract.set_sign_date(parse_field(dataframe, key_dictionary[SIGN_DATE_KEY]))
-    _contract.set_sign_place(parse_field(dataframe, key_dictionary[SIGN_PLACE_KEY]))
-    _contract.set_delivery_date(parse_field(dataframe, key_dictionary[DELIVERY_DATE_KEY]))
-    _contract.set_delivery_method(parse_field(dataframe, key_dictionary[DELIVERY_METHOD_KEY]))
-    _contract.set_payment_method(parse_field(dataframe, key_dictionary[PAYMENT_METHOD_KEY]))
-    _contract.set_expiry_date(parse_field(dataframe, key_dictionary[EXPIRY_DATE_KEY]))
-    _contract.set_incentive_system(parse_field(dataframe, key_dictionary[INCENTIVE_SYSTEM_KEY]))
+    _no = parse_field(dataframe, key_dictionary[CONTRACT_NO_KEY])
+    _customer_name = parse_field(dataframe, key_dictionary[CUSTOMER_NAME_KEY])
+    _sign_entity = parse_field(dataframe, key_dictionary[SIGN_ENTITY_KEY])
+    _sign_date = parse_field(dataframe, key_dictionary[SIGN_DATE_KEY])
+    _sign_place = parse_field(dataframe, key_dictionary[SIGN_PLACE_KEY])
+    _delivery_date = parse_field(dataframe, key_dictionary[DELIVERY_DATE_KEY])
+    _delivery_method = parse_field(dataframe, key_dictionary[DELIVERY_METHOD_KEY])
+    _payment_method = parse_field(dataframe, key_dictionary[PAYMENT_METHOD_KEY])
+    _expiry_date = parse_field(dataframe, key_dictionary[EXPIRY_DATE_KEY])
+    _incentive_system = parse_field(dataframe, key_dictionary[INCENTIVE_SYSTEM_KEY])
+
+    if _sign_date is None:
+        match = re.compile("(?<=自).*?(?=开始)").search(src_text)
+        start_date = None
+        end_date = None
+        if match is not None:
+            start_date = match.group()
+        match = re.compile("(?<=到).*?(?=止)").search(src_text)
+        if match is not None:
+            end_date = match.group()
+        _sign_date = str(start_date) + "-" + str(end_date)
+
+    _contract.set_sign_entity(_sign_entity)
+    _contract.set_sign_date(_sign_date)
+    _contract.set_sign_place(_sign_place)
+    _contract.set_delivery_date(_delivery_date)
+    _contract.set_delivery_method(_delivery_method)
+    _contract.set_payment_method(_payment_method)
+    _contract.set_expiry_date(_expiry_date)
+    _contract.set_incentive_system(_incentive_system)
 
     return _contract
 
@@ -216,14 +236,13 @@ if __name__ == '__main__':
     json_files = file_filter(root)
     err_file = []
     contract_list = []
-    for name, pages in json_files.items():
+    for filename, pages in json_files.items():
         try:
-            contract = extract_contract(pages)
-            contract.filename = name
+            contract = extract_contract(pages, filename)
             if contract is not None:
                 contract_list.append(contract)
         except Exception as e:
-            err_file.append(name)
+            err_file.append(filename)
     single_contract_list = [e for e in contract_list if e.type == SINGLE_PRODUCT]
     whole_line_contract_list = [e for e in contract_list if e.type == WHOLE_LINE]
     other_contract_list = [e for e in contract_list if e.type == OTHERS]

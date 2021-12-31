@@ -17,7 +17,7 @@ key_dictionary = {
     CUSTOMER_NAME_KEY: ["甲方", "购货方", "收货联系人", "需方"],
     SIGN_ENTITY_KEY: ["供货方", "卖方", "销售单位", "乙方", "供方", "提供方"],
     PRODUCT_NAME_KEY: ["产品名称", "提供"],
-    CONTRACT_NO_KEY: ["合同编号", "编号"],
+    CONTRACT_NO_KEY: ["合同编号", "编号", "订货单号"],
     UNIT_PRICE_KEY: ["产品单价"],
     SIGN_PLACE_KEY: ["签约地点"],
     PAYMENT_METHOD_KEY: ["结算方式"],
