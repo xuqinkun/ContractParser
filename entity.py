@@ -53,6 +53,16 @@ class Contract:
         self._parent_dir = value
 
     @property
+    def filename(self):
+        return self._filename
+
+    @filename.setter
+    def filename(self, value):
+        if value is None:
+            value = ""
+        self._filename = value
+
+    @property
     def form(self):
         return self._form
 
@@ -130,7 +140,7 @@ class Contract:
     def delivery_date(self, value):
         if value is None:
             value = ""
-        self.delivery_date =value
+        self._delivery_date = value
 
     @property
     def delivery_method(self):
@@ -217,27 +227,47 @@ class Contract:
             value = ""
         self._unit_price = value
 
+    @property
+    def text(self):
+        return self._text
+
+    @text.setter
+    def text(self, value):
+        if value is None:
+            value = ""
+        self._text = value
+
     def serialize(self):
         pairs = self.__dict__.copy()
         key_set = pairs.keys()
         for key in list(key_set):
             if pairs[key] is None:
                 pairs.pop(key)
+
         pairs.pop("_type")
-        pairs.pop("text")
+        pairs.pop("_text")
+        pairs.pop("_title")
         pairs.pop("_form")
         key_set = list(pairs.keys())
-        key_set[key_set.index("no")] = CONTRACT_NO_KEY
-        key_set[key_set.index("sign_date")] = SIGN_DATE_KEY
-        key_set[key_set.index("customer_name")] = CUSTOMER_NAME_KEY
-        key_set[key_set.index("sign_place")] = SIGN_PLACE_KEY
-        key_set[key_set.index("product_name")] = PRODUCT_NAME_KEY
-        return list(pairs.keys()), list(pairs.values())
+        key_set[key_set.index("_no")] = CONTRACT_NO_KEY
+        key_set[key_set.index("_sign_date")] = SIGN_DATE_KEY
+        key_set[key_set.index("_first_dir")] = "一级目录"
+        key_set[key_set.index("_parent_dir")] = "末级目录"
+        key_set[key_set.index("_filename")] = "文件名(pdf)"
+        key_set[key_set.index("_sign_entity")] = SIGN_ENTITY_KEY
+        key_set[key_set.index("_incentive_system")] = INCENTIVE_SYSTEM_KEY
+        key_set[key_set.index("_unit_price")] = UNIT_PRICE_KEY
+        key_set[key_set.index("_delivery_method")] = DELIVERY_METHOD_KEY
+        key_set[key_set.index("_delivery_date")] = DELIVERY_DATE_KEY
+        key_set[key_set.index("_customer_name")] = CUSTOMER_NAME_KEY
+        key_set[key_set.index("_sign_place")] = SIGN_PLACE_KEY
+        key_set[key_set.index("_product_name")] = PRODUCT_NAME_KEY
+        key_set[key_set.index("_expiry_date")] = EXPIRY_DATE_KEY
+        key_set[key_set.index("_payment_method")] = PAYMENT_METHOD_KEY
+        key_set[key_set.index("_total_value")] = TOTAL_VALUE_KEY
+        return list(key_set), list(pairs.values())
 
     pass
-
-    def set_text(self, src_text):
-        self.text = src_text
 
 
 class Cell:
