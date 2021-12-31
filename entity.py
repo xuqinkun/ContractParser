@@ -10,95 +10,212 @@ OTHERS = 2
 class Contract:
 
     def __init__(self):
-        self.root_dir = None
-        self.filename = ""
+        self._first_dir = None
+        self._parent_dir = None
+        self._filename = None
         self._type = None
-        self.text = None
+        self._text = None
 
-        self.no = ""
+        self._no = ""
         self._title = ""
-        self.customer_name = ""
-        self.sign_entity = ""
-        self.product_name = ""
-        self.total_value = ""
-        self.sign_place = ""
-        self.sign_date = ""
-        self.delivery_method = ""
-        self.delivery_date = ""
-        self.payment_method = ""
-        self.expiry_date = ""
-        self.incentive_system = None
-        self.unit_price = ""
+        self._customer_name = ""
+        self._sign_entity = ""
+        self._product_name = ""
+        self._total_value = ""
+        self._sign_place = ""
+        self._sign_date = ""
+        self._delivery_method = ""
+        self._delivery_date = ""
+        self._payment_method = ""
+        self._expiry_date = ""
+        self._incentive_system = None
+        self._unit_price = ""
         self._form = None
+
+    @property
+    def first_dir(self):
+        return self.first_dir
+
+    @first_dir.setter
+    def first_dir(self, value):
+        if value is None:
+            value = ""
+        self._first_dir = value
+
+    @property
+    def parent_dir(self):
+        return self._parent_dir
+
+    @parent_dir.setter
+    def parent_dir(self, value):
+        if value is None:
+            value = ""
+        self._parent_dir = value
 
     @property
     def form(self):
         return self._form
 
     @form.setter
-    def form(self, form):
-        self._form = form
-
-    def set_root_dir(self, root_dir):
-        self.root_dir = root_dir
-
-    def set_filename(self, filename):
-        self.filename = filename
+    def form(self, value):
+        if value is None:
+            value = ""
+        self._form = value
 
     @property
     def type(self):
         return self._type
 
     @type.setter
-    def type(self, _type):
-        self._type = _type
+    def type(self, value):
+        if value is None:
+            value = ""
+        self._type = value
 
     @property
     def title(self):
         return self._title
 
     @title.setter
-    def title(self, _title):
-        self._title = _title
+    def title(self, value):
+        if value is None:
+            value = ""
+        self._title = value
 
-    def set_no(self, no):
-        self.no = no
+    @property
+    def type(self):
+        return self._type
 
-    def set_customer_name(self, customer_name):
-        self.customer_name = customer_name
+    @type.setter
+    def type(self, value):
+        if value is None:
+            value = ""
+        self._type = value
 
-    def set_sign_entity(self, sign_entity):
-        self.sign_entity = sign_entity
+    @property
+    def customer_name(self):
+        return self._customer_name
 
-    def set_product_name(self, product_name):
-        self.product_name = product_name
+    @customer_name.setter
+    def customer_name(self, value):
+        if value is None:
+            value = ""
+        self._customer_name = value
 
-    def set_total_value(self, total_value):
-        self.total_value = total_value
+    @property
+    def sign_entity(self):
+        return self._sign_entity
 
-    def set_delivery_date(self, delivery_date):
-        self.delivery_date = delivery_date
+    @sign_entity.setter
+    def sign_entity(self, value):
+        if value is None:
+            value = ""
+        self._sign_entity = value
 
-    def set_delivery_method(self, delivery_method):
-        self.delivery_method = delivery_method
+    @property
+    def product_name(self):
+        return self._product_name
 
-    def set_unit_price(self, unit_price):
-        self.unit_price = unit_price
+    @product_name.setter
+    def product_name(self, value):
+        if value is None:
+            value = ""
+        self._product_name = value
 
-    def set_incentive_system(self, incentive_system):
-        self.incentive_system = incentive_system
+    @property
+    def delivery_date(self):
+        return self._delivery_date
 
-    def set_payment_method(self, payment_method):
-        self.payment_method = payment_method
+    @delivery_date.setter
+    def delivery_date(self, value):
+        if value is None:
+            value = ""
+        self.delivery_date =value
 
-    def set_expiry_date(self, expiry_date):
-        self.expiry_date = expiry_date
+    @property
+    def delivery_method(self):
+        return self._delivery_method
+
+    @delivery_method.setter
+    def delivery_method(self, value):
+        if value is None:
+            value = ""
+        self._delivery_method = value
+
+    @property
+    def expiry_date(self):
+        return self._expiry_date
+
+    @expiry_date.setter
+    def expiry_date(self, value):
+        if value is None:
+            value = ""
+        self._expiry_date = value
+
+    @property
+    def incentive_system(self):
+        return self._incentive_system
+
+    @incentive_system.setter
+    def incentive_system(self, value):
+        if value is None:
+            value = ""
+        self._incentive_system = value
+
+    @property
+    def payment_method(self):
+        return self._payment_method
+
+    @payment_method.setter
+    def payment_method(self, value):
+        if value is None:
+            value = ""
+        self._payment_method = value
+
+    @property
+    def sign_date(self):
+        return self._sign_date
+
+    @sign_date.setter
+    def sign_date(self, value):
+        if value is None:
+            value = ""
+        self._sign_date = value
 
     def set_sign_date(self, sign_date):
+        if sign_date is None:
+            sign_date = ""
         self.sign_date = sign_date
 
-    def set_sign_place(self, sign_place):
-        self.sign_place = sign_place
+    @property
+    def sign_place(self):
+        return self._sign_place
+
+    @sign_place.setter
+    def sign_place(self, value):
+        if value is None:
+            value = ""
+        self._sign_place = value
+
+    @property
+    def total_value(self):
+        return self._total_value
+
+    @total_value.setter
+    def total_value(self, value):
+        if value is None:
+            value = ""
+        self._total_value = value
+
+    @property
+    def unit_price(self):
+        return self._unit_price
+
+    @unit_price.setter
+    def unit_price(self, value):
+        if value is None:
+            value = ""
+        self._unit_price = value
 
     def serialize(self):
         pairs = self.__dict__.copy()
