@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from Keys import *
+from keys import *
 
 SINGLE_PRODUCT = 0
 WHOLE_LINE = 1
@@ -34,7 +34,7 @@ class Contract:
 
     @property
     def first_dir(self):
-        return self.first_dir
+        return self._first_dir
 
     @first_dir.setter
     def first_dir(self, value):

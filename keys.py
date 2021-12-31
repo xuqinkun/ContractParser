@@ -24,7 +24,7 @@ key_dictionary = {
     DELIVERY_METHOD_KEY: ["交货地点及方式", "运输方式"],
     DELIVERY_DATE_KEY: ["交货日期", "统计周期"],
     SIGN_DATE_KEY: ["签订日期", "订单日期"],
-    TOTAL_VALUE_KEY: ["总额为", "总计", "金额为"],
+    TOTAL_VALUE_KEY: ["¥", "总额为", "总计", "金额为"],
     EXPIRY_DATE_KEY: ["有效期限"],
     INCENTIVE_SYSTEM_KEY: ["激励制度"]
 }
