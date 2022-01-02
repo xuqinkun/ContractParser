@@ -33,6 +33,16 @@ class Contract:
         self._form = None
 
     @property
+    def no(self):
+        return self._no
+
+    @no.setter
+    def no(self, value):
+        if value is None:
+            value = ""
+        self._no = value
+
+    @property
     def first_dir(self):
         return self._first_dir
 
@@ -266,7 +276,6 @@ class Contract:
         key_set[key_set.index("_payment_method")] = PAYMENT_METHOD_KEY
         key_set[key_set.index("_total_value")] = TOTAL_VALUE_KEY
         return list(key_set), list(pairs.values())
-
     pass
 
 
